@@ -1,8 +1,8 @@
 <!-- UNITY CODE ASSIST INSTRUCTIONS START -->
-- Project name: First Person Game
-- Unity version: Unity 6000.3.11f1
+- Project name: MTEC3150_FirstPersonGame
+- Unity version: Unity 6000.3.0f1
 - Active game object:
-  - Name: Player
+  - Name: Plane
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
