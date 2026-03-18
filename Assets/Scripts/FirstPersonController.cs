@@ -43,7 +43,14 @@ public class FirstPersonController : MonoBehaviour
     float verticalRotation;
     public float upDownRange = 80;
 
-    private Camera cam;
+    private Camera cam; //Our Main Camera
+
+    private Vector3 hitPoint; //world space position of our raycast hit point
+    public ParticleSystem impactPS;
+    //Giving a public float a range will give us a slider in the inspector mentu
+    [Range (10, 30)] public int particleCount = 20;
+    
+
 
 
     //Velocity of current movement.
@@ -76,6 +83,11 @@ public class FirstPersonController : MonoBehaviour
 
         }
 
+        if (Input.GetMouseButtonDown(0)) 
+        {
+            impactPS.transform.position = hitPoint; //confirm hit point and move particles to the hitpoint.
+            impactPS.Emit(particleCount); //Emits/plays particle animation and emits how many particles we specified in count.
+        }
 
 
     }
@@ -95,9 +107,11 @@ public class FirstPersonController : MonoBehaviour
         float horizontalSpeed = horizontalInput * currentSpeed;
         float verticalSpeed = verticalInput * currentSpeed;
 
-
         //Vector3 horizontalMovement = new Vector3(horSpeed, 0, verSpeed);
         Vector3 horizontalMovement = new Vector3(horizontalSpeed, 0, verticalSpeed);
+        horizontalMovement = transform.rotation * horizontalMovement;
+        //verticalMovement = transform.rotation * verticalMovement;
+
 
         currentMovement.x = horizontalMovement.x;
         currentMovement.z = horizontalMovement.z;
@@ -172,6 +186,7 @@ public class FirstPersonController : MonoBehaviour
         {
             result = hit.transform.gameObject;
 
+            hitPoint = hit.point; //Where the laser hits the object
         }
 
 
