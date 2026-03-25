@@ -172,6 +172,7 @@ public class FirstPersonController : MonoBehaviour
         cam.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
 
 
+
     }
 
     //Public functions require a return
@@ -197,6 +198,8 @@ public class FirstPersonController : MonoBehaviour
 
 
 
+    //New code here
+
 
 
 
@@ -204,6 +207,13 @@ public class FirstPersonController : MonoBehaviour
 
 
 }
+
+
+
+
+
+
+
 
 
 
@@ -265,11 +275,33 @@ lastPosition = gameObject.transform.position;
 
 
 
-*/ 
+
+
+//void Destroy() 
+//{
+//    if (Physics.RaycastHit = true)
+//    {
+//        ObjectInFocus();
+
+//        Destroy(gameObject);
+//        //Instantiate(Destroy.GameObject, transform.position, transform.rotation);
+//        //Instantiate(Destroy.Particle, transform.position, transform.rotation);
+
+
+//    }
+
+
+//    //if (Physics.Raycast.hit = true)
+//    //{
+//    //    Destroy'GameObject'.transform;
+//    //    result = hitPoint.Destroy.GameObject.transform;
+//    //}
+
+//}
 
 
 
-
+*/
 
 
 
