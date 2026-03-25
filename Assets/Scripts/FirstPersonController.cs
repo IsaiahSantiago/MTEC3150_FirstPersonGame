@@ -36,8 +36,11 @@ public class FirstPersonController : MonoBehaviour
 
     public float jumpForce = 5;
 
-    public float gravity = 9.81f; //* 2; // Gravity is squared
+    public float pickupRange = 2;
+    public Transform HoldPoint;
+    public float throwForce = 5;
 
+    public float gravity = 9.81f; //* 2; // Gravity is squared
 
     public float mouseSensitivity = 2;
     float verticalRotation;
@@ -49,7 +52,8 @@ public class FirstPersonController : MonoBehaviour
     public ParticleSystem impactPS;
     //Giving a public float a range will give us a slider in the inspector mentu
     [Range (10, 30)] public int particleCount = 20;
-    
+
+    private Item heldItem; // = null;
 
 
 
@@ -76,20 +80,51 @@ public class FirstPersonController : MonoBehaviour
         Sprinting();
         Jumping();
 
+        if (heldItem != null)
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                heldItem.Throw(throwForce, cam.transform.forward);
+                heldItem = null;
+
+            }
+        }
+
+
+
         if (ObjectInFocus() != null)
         {
+            //gives distance to any object we're looking at in comparison to the camera position relative to the ObjectInFocus function (Raycast info)
+            float distanceToObject = Vector3.Distance(transform.position, ObjectInFocus().transform.position);
+
+
             //Can also be debug.log(ObjectInFocus().name)
-            print(ObjectInFocus().name);
+            //print(ObjectInFocus().name);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                impactPS.transform.position = hitPoint; //confirm hit point and move particles to the hitpoint.
+                impactPS.Emit(particleCount); //Emits/plays particle animation and emits how many particles we specified in count.
+            }
+
+            //If the object is in range and has an item script attached to it do this, if NOT then don't do anything to it like the ground or walls.
+            if (distanceToObject <= pickupRange && ObjectInFocus().GetComponent<Item>() != null) 
+            {
+                if (Input.GetMouseButtonDown(1)) 
+                {
+                    //ObjectInFocus().GetComponent<Item>().Pickup(cam.transform,HoldPoint.position);
+                    heldItem = ObjectInFocus().GetComponent<Item>();
+                    heldItem.Pickup(cam.transform,HoldPoint.position);
+
+
+                }
+
+            }
+
+
+
 
         }
-
-        if (Input.GetMouseButtonDown(0)) 
-        {
-            impactPS.transform.position = hitPoint; //confirm hit point and move particles to the hitpoint.
-            impactPS.Emit(particleCount); //Emits/plays particle animation and emits how many particles we specified in count.
-        }
-
-
     }
 
 
