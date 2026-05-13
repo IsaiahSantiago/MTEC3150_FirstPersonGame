@@ -36,6 +36,10 @@ public class FirstPersonController : MonoBehaviour
 
     public float jumpForce = 5;
 
+    public AudioClip shootingSound;
+    public AudioClip impactSound;
+
+
     public float pickupRange = 2;
     public Transform HoldPoint;
     public float throwForce = 5;
@@ -51,9 +55,21 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 hitPoint; //world space position of our raycast hit point
     public ParticleSystem impactPS;
     //Giving a public float a range will give us a slider in the inspector mentu
-    [Range (10, 30)] public int particleCount = 20;
+    [unityEngine.Unity Range(10, 30)] public int particleCount = 20;
 
     private Item heldItem; // = null;
+
+
+    float walkStepInterval = 0.5f;
+    float runStepInterval = 0.3f;
+    float currentStepInterval;
+
+    bool isMoving;
+    bool isSprinting;
+
+    float nextTimestep;
+    float velocityThreshold = 2;
+
 
 
 
@@ -66,6 +82,9 @@ public class FirstPersonController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
+
+        AudioSource.GetComponent<AudioSource>();
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -91,6 +110,13 @@ public class FirstPersonController : MonoBehaviour
         }
 
 
+        //if(AudioSource)
+        //{
+
+
+        //}
+
+
 
         if (ObjectInFocus() != null)
         {
@@ -105,16 +131,24 @@ public class FirstPersonController : MonoBehaviour
             {
                 impactPS.transform.position = hitPoint; //confirm hit point and move particles to the hitpoint.
                 impactPS.Emit(particleCount); //Emits/plays particle animation and emits how many particles we specified in count.
+
+
+                //Playing the impact audio from the impacted ray shot impact
+                AudioManager.inst.
+
+
+
+
             }
 
             //If the object is in range and has an item script attached to it do this, if NOT then don't do anything to it like the ground or walls.
-            if (distanceToObject <= pickupRange && ObjectInFocus().GetComponent<Item>() != null) 
+            if (distanceToObject <= pickupRange && ObjectInFocus().GetComponent<Item>() != null)
             {
-                if (Input.GetMouseButtonDown(1)) 
+                if (Input.GetMouseButtonDown(1))
                 {
                     //ObjectInFocus().GetComponent<Item>().Pickup(cam.transform,HoldPoint.position);
                     heldItem = ObjectInFocus().GetComponent<Item>();
-                    heldItem.Pickup(cam.transform,HoldPoint.position);
+                    heldItem.Pickup(cam.transform, HoldPoint.position);
 
 
                 }
@@ -128,7 +162,7 @@ public class FirstPersonController : MonoBehaviour
     }
 
 
-    void movement() 
+    void movement()
     {
 
         //Our horizontal is our X and our Vertical movment is our Z ( X and Z )
@@ -154,31 +188,35 @@ public class FirstPersonController : MonoBehaviour
         characterController.Move(currentMovement * Time.deltaTime);
 
 
-        //if (KeyCode('SPACE') = true) 
-        //{
-        //    horSpeed * float(1.25), (verSpeed + (verSpeed * 25%)));
-        //}
+        //Creating a bool to ask if we're moving in true or false
+        isMoving = verticalInput != 0 || horizontalInput != 0;
+        handleFootsteps();
+        
 
 
     }
 
-    void Sprinting() 
+    void Sprinting()
     {
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
             currentSpeed = sprintSpeed;
+            isSprinting = true;
 
         }
-        else 
+        else
         {
             currentSpeed = walkSpeed;
+            isSprinting = false;
+
         }
-   
+
+
     }
 
 
-    void Jumping() 
+    void Jumping()
     {
         if (characterController.isGrounded)
         {
@@ -187,7 +225,7 @@ public class FirstPersonController : MonoBehaviour
                 currentMovement.y = jumpForce;
             }
         }
-        else 
+        else
         {
             currentMovement.y -= gravity * Time.deltaTime;
         }
@@ -198,7 +236,7 @@ public class FirstPersonController : MonoBehaviour
 
 
 
-    void MouseLook() 
+    void MouseLook()
     {
         float mouseXRotation = Input.GetAxis("Mouse X") * mouseSensitivity;
         transform.Rotate(0, mouseXRotation, 0);
@@ -209,6 +247,12 @@ public class FirstPersonController : MonoBehaviour
 
 
     }
+
+
+
+
+
+
 
     //Public functions require a return
     public GameObject ObjectInFocus()
@@ -231,7 +275,30 @@ public class FirstPersonController : MonoBehaviour
     }
 
 
+    private void handleFootsteps()
+    {
+        //concatinated conditional, basically doing an if else in one statement
+        currentStepInterval = isSprinting ? runStepInterval : walkStepInterval;
 
+
+
+
+        if (characterController.isGrounded && isMoving && Time.time > nextTimestep && characterController.velocity.magnitude > velocityThreshold)
+        {
+
+            AudioManager.inst.PlayFootstep(audioSource);
+            nextTimestep = Time.time + currentStepInterval;
+        
+        
+        
+        }
+
+
+
+
+    
+    
+    }
 
     //New code here
 
